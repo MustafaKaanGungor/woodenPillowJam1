@@ -1,9 +1,6 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using DG.Tweening;
 using UnityEngine;
-using UnityEngine.InputSystem;
 
 public class Player : MonoBehaviour
 {
@@ -14,18 +11,24 @@ public class Player : MonoBehaviour
         UNCONSCIOUS = 1,
         TERRIFIED = 2,
     }
-    private PilotStatus currentStatus;
+    [SerializeField] private PilotStatus currentStatus;
     private Animator animator;
-    [SerializeField] private float turnFactor = 5f;
-    [SerializeField] private float turnTime = 5f;
-    [SerializeField] private float turnAmountRight = 0f;
-    [SerializeField] private float turnAmountLeft = 0f;
-    [SerializeField] private float turnAmountUp = 0f;
-    [SerializeField] private float turnAmountDown = 0f;
+    //[SerializeField] private float turnFactor = 5f;
+    //[SerializeField] private float turnTime = 5f;
+    private float turnAmountRight = 0f;
+    private float turnAmountLeft = 0f;
+    //[SerializeField] private float turnAmountUp = 0f;
+    //[SerializeField] private float turnAmountDown = 0f;
     [SerializeField] private float turnLimit = 20f;
     [SerializeField] private List<GameObject> missiledOnLeft = new List<GameObject>();
     [SerializeField] private List<GameObject> missiledOnRight = new List<GameObject>();
     [SerializeField] private int flareAmount = 60;
+    private bool startFlaring = false;
+    private int flareFireAmount = 0;
+    private float flareTimer = 1.5f;
+    [SerializeField] private ParticleSystem leftFlareParticles;
+    [SerializeField] private ParticleSystem rightFlareParticles;
+    [SerializeField] private float flareCooldown = 0.5f;
     [SerializeField] private float blackoutLimit = 100;
     [SerializeField] private float blackoutMeter = 0f;
     [SerializeField] private float blackoutCooldown = 2f;
@@ -36,8 +39,9 @@ public class Player : MonoBehaviour
         Instance = this;
         animator = GetComponent<Animator>();
     }
-    
-    private void Start() {
+
+    private void Start()
+    {
         GameInput.Instance.OnFlarePerformed += flare_performed;
         MissileManager.Instance.OnMissileFiredLeft += missile_fired_left;
         MissileManager.Instance.OnMissileFiredRight += missile_fired_right;
@@ -45,33 +49,16 @@ public class Player : MonoBehaviour
 
     private void flare_performed(object sender, EventArgs e)
     {
-        if (currentStatus == PilotStatus.UNCONSCIOUS)
-        {
-            return;
-        }
-
         if (flareAmount <= 0)
         {
-            //TODO no missiles remain    
-        }
-        else if (flareAmount < 6)
-        {
-            //TODO a few missiles remain
+            //TODO no missiles remain 
+            //TODO UI managere hbaer ver, flares yazısı kırmızı parlasın ve boş sesi oynasın   
         }
         else
         {
-            flareAmount -= 6;
-            Debug.Log("flares fired! Remaining flares:" + flareAmount);
-            if (missiledOnLeft.Count != 0)
-            {
-                missiledOnLeft[0].GetComponent<Missile>().SwayFromTarget();
-                missiledOnLeft.RemoveAt(0);
-            }
-            if (missiledOnRight.Count != 0)
-            {
-                missiledOnRight[0].GetComponent<Missile>().SwayFromTarget();
-                missiledOnRight.RemoveAt(0);
-            }
+            startFlaring = true;
+            leftFlareParticles.Play();
+            rightFlareParticles.Play();
         }
     }
 
@@ -92,6 +79,7 @@ public class Player : MonoBehaviour
             case PilotStatus.CALM:
                 Look();
                 Maneuver(100);
+                Flare();
                 break;
             case PilotStatus.UNCONSCIOUS:
                 //TODO blackout etkileri
@@ -103,11 +91,12 @@ public class Player : MonoBehaviour
                 else if (blackoutMeter <= 40)
                 {
                     currentStatus = PilotStatus.CALM;
-                }   
+                }
                 break;
             case PilotStatus.TERRIFIED:
                 Look();
                 Maneuver(70);
+                Flare();
                 break;
             default:
                 break;
@@ -186,8 +175,53 @@ public class Player : MonoBehaviour
         //transform.DORotate(new Vector3(0, 0, transform.rotation.eulerAngles.z - maneuverInput.x * turnFactor), turnTime, RotateMode.FastBeyond360);
     }
 
+    private void Flare()
+    {
+        if (startFlaring)
+        {
+            if (flareFireAmount < 3)
+            {
+                flareTimer += Time.deltaTime;
+                if (flareTimer >= flareCooldown)
+                {
+                    Debug.Log("flares fired!");
+                    flareAmount -= 2;
+                    flareTimer = 0;
+                    flareFireAmount++;
+                    if (missiledOnLeft.Count != 0)
+                    {
+                        if (missiledOnLeft[0].GetComponent<Missile>().isDodgeable)
+                        {
+                            missiledOnLeft[0].GetComponent<Missile>().SwayFromTarget();
+                            missiledOnLeft.RemoveAt(0);
+                        }
+                    }
+                    if (missiledOnRight.Count != 0)
+                    {
+                        if (missiledOnRight[0].GetComponent<Missile>().isDodgeable)
+                        {
+                            missiledOnRight[0].GetComponent<Missile>().SwayFromTarget();
+                            missiledOnRight.RemoveAt(0);
+                        }
+                    }
+                }
+            }
+            else
+            {
+                flareFireAmount = 0;
+                startFlaring = false;
+            }
+        }
+            
+    }
+
     public void GetHit()
     {
         GameManager.Instance.EndGame();
+    }
+
+    public int GetFlareAmount()
+    {
+        return flareAmount;
     }
 }
