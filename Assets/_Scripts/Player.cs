@@ -184,7 +184,6 @@ public class Player : MonoBehaviour
                 flareTimer += Time.deltaTime;
                 if (flareTimer >= flareCooldown)
                 {
-                    Debug.Log("flares fired!");
                     flareAmount -= 2;
                     flareTimer = 0;
                     flareFireAmount++;

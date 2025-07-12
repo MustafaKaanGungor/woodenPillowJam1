@@ -7,6 +7,13 @@ public class Missile : MonoBehaviour
     [SerializeField] private float timeToDodge = 5f;
     [SerializeField] private bool isTracking = true;
     public bool isDodgeable = false;
+    [SerializeField] private GameObject missileUIprefab;
+
+    void Start()
+    {
+        GameObject missileUI = Instantiate(missileUIprefab, HUDManager.Instance.transform );
+        missileUI.GetComponent<MissileUI>().SetMissile(gameObject);
+    }
 
     void Update()
     {
@@ -24,8 +31,13 @@ public class Missile : MonoBehaviour
         }
     }
 
+    public float RemainingDistance()
+    {
+        return timeToReach - reachTimer;
+    }
+
     public void SwayFromTarget()
     {
-        isTracking = false;  
+        isTracking = false;
     }
 }

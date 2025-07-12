@@ -44,3 +44,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7136a97d644e19b4c9a867f151080dce, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  timeToReach: 10
+  reachTimer: 0
+  timeToDodge: 5
+  isTracking: 1
+  isDodgeable: 0
+  missileUIprefab: {fileID: 3059682216683811595, guid: 6beae2e04d2242d4c935905dc0deaef5, type: 3}
