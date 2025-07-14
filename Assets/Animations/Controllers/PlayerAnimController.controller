@@ -35,8 +35,8 @@ AnimatorStateTransition:
   m_PrefabAsset: {fileID: 0}
   m_Name: 
   m_Conditions:
-  - m_ConditionMode: 3
-    m_ConditionEvent: LookDirection
+  - m_ConditionMode: 1
+    m_ConditionEvent: LookRight
     m_EventTreshold: 800
   m_DstStateMachine: {fileID: 0}
   m_DstState: {fileID: -9054644365106585262}
@@ -88,8 +88,8 @@ AnimatorStateTransition:
   m_PrefabAsset: {fileID: 0}
   m_Name: 
   m_Conditions:
-  - m_ConditionMode: 3
-    m_ConditionEvent: LookDirection
+  - m_ConditionMode: 2
+    m_ConditionEvent: LookLeft
     m_EventTreshold: 400
   m_DstStateMachine: {fileID: 0}
   m_DstState: {fileID: 4638341191102772111}
@@ -113,8 +113,8 @@ AnimatorStateTransition:
   m_PrefabAsset: {fileID: 0}
   m_Name: 
   m_Conditions:
-  - m_ConditionMode: 4
-    m_ConditionEvent: LookDirection
+  - m_ConditionMode: 2
+    m_ConditionEvent: LookRight
     m_EventTreshold: 800
   m_DstStateMachine: {fileID: 0}
   m_DstState: {fileID: 4638341191102772111}
@@ -139,8 +139,14 @@ AnimatorController:
   m_Name: PlayerAnimController
   serializedVersion: 5
   m_AnimatorParameters:
-  - m_Name: LookDirection
-    m_Type: 1
+  - m_Name: LookRight
+    m_Type: 4
+    m_DefaultFloat: 0
+    m_DefaultInt: 0
+    m_DefaultBool: 0
+    m_Controller: {fileID: 9100000}
+  - m_Name: LookLeft
+    m_Type: 4
     m_DefaultFloat: 0
     m_DefaultInt: 0
     m_DefaultBool: 0
@@ -193,8 +199,8 @@ AnimatorStateTransition:
   m_PrefabAsset: {fileID: 0}
   m_Name: 
   m_Conditions:
-  - m_ConditionMode: 4
-    m_ConditionEvent: LookDirection
+  - m_ConditionMode: 1
+    m_ConditionEvent: LookLeft
     m_EventTreshold: 400
   m_DstStateMachine: {fileID: 0}
   m_DstState: {fileID: 2745036313107065249}

@@ -13,6 +13,7 @@ public class Player : MonoBehaviour
     }
     [SerializeField] private PilotStatus currentStatus;
     private Animator animator;
+    [SerializeField] private float edgePanAreaSize = 200;
     //[SerializeField] private float turnFactor = 5f;
     //[SerializeField] private float turnTime = 5f;
     private float turnAmountRight = 0f;
@@ -51,8 +52,7 @@ public class Player : MonoBehaviour
     {
         if (flareAmount <= 0)
         {
-            //TODO no missiles remain 
-            //TODO UI managere hbaer ver, flares yazısı kırmızı parlasın ve boş sesi oynasın   
+            HUDManager.Instance.NoFlaresRemain();  
         }
         else
         {
@@ -106,8 +106,21 @@ public class Player : MonoBehaviour
     private void Look()
     {
         float lookValue = GameInput.Instance.GetLookAxis();
-
-        animator.SetFloat("LookDirection", lookValue);
+        if (lookValue < edgePanAreaSize)
+        {
+            animator.SetBool("LookLeft", true);
+            animator.SetBool("LookRight", false);
+        }
+        else if (lookValue > Screen.width - edgePanAreaSize)
+        {
+            animator.SetBool("LookRight", true);
+            animator.SetBool("LookLeft", false);
+        }
+        else
+        {
+            animator.SetBool("LookRight", false);
+            animator.SetBool("LookLeft", false);
+        }
     }
 
     private void Maneuver(float effectiveness)

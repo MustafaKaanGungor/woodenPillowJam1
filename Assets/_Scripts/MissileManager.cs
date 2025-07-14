@@ -11,6 +11,7 @@ public class MissileManager : MonoBehaviour
     [SerializeField] private float missileFireChance = 20f;
     [SerializeField] private GameObject missileLeftPrefab;
     [SerializeField] private GameObject missileRightPrefab;
+    [SerializeField] private Transform missileSpawnPoint;
 
 
     private void Awake()
@@ -37,13 +38,15 @@ public class MissileManager : MonoBehaviour
             int missileDirection = UnityEngine.Random.Range(0, 100);
             if (missileDirection < 50)
             {
-                GameObject firedMissile = Instantiate(missileRightPrefab);
+                GameObject firedMissile = Instantiate(missileRightPrefab, missileSpawnPoint.position, Quaternion.identity);
+                firedMissile.GetComponent<Missile>().SetDirection(true);
                 OnMissileFiredRight?.Invoke(firedMissile, EventArgs.Empty);
                 Debug.Log("fire from right!");
             }
             else if (missileDirection >= 50)
             {
-                GameObject firedMissile = Instantiate(missileLeftPrefab);
+                GameObject firedMissile = Instantiate(missileLeftPrefab, missileSpawnPoint.position, Quaternion.identity);
+                firedMissile.GetComponent<Missile>().SetDirection(false);
                 OnMissileFiredLeft?.Invoke(firedMissile, EventArgs.Empty);
                 Debug.Log("fire from left!");
             }
