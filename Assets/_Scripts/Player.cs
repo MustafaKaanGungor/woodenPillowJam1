@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class Player : MonoBehaviour
@@ -12,7 +13,7 @@ public class Player : MonoBehaviour
         TERRIFIED = 2,
     }
     [SerializeField] private PilotStatus currentStatus;
-    private Animator animator;
+    [SerializeField] private Animator animator;
     [SerializeField] private float edgePanAreaSize = 200;
     //[SerializeField] private float turnFactor = 5f;
     //[SerializeField] private float turnTime = 5f;
@@ -27,8 +28,10 @@ public class Player : MonoBehaviour
     private bool startFlaring = false;
     private int flareFireAmount = 0;
     private float flareTimer = 1.5f;
-    [SerializeField] private ParticleSystem leftFlareParticles;
-    [SerializeField] private ParticleSystem rightFlareParticles;
+    //[SerializeField] private ParticleSystem leftFlareParticles;
+    //[SerializeField] private ParticleSystem rightFlareParticles;
+    //private ParticleSystem.Particle[] leftParticleArray;
+    //private ParticleSystem.Particle[] rightParticleArray;
     [SerializeField] private float flareCooldown = 0.5f;
     [SerializeField] private float blackoutLimit = 100;
     [SerializeField] private float blackoutMeter = 0f;
@@ -38,7 +41,9 @@ public class Player : MonoBehaviour
     private void Awake()
     {
         Instance = this;
-        animator = GetComponent<Animator>();
+        //animator = GetComponent<Animator>();
+        //leftParticleArray = new ParticleSystem.Particle[leftFlareParticles.main.maxParticles];
+        //rightParticleArray = new ParticleSystem.Particle[rightFlareParticles.main.maxParticles];
     }
 
     private void Start()
@@ -57,8 +62,8 @@ public class Player : MonoBehaviour
         else
         {
             startFlaring = true;
-            leftFlareParticles.Play();
-            rightFlareParticles.Play();
+            //leftFlareParticles.Play();
+            //rightFlareParticles.Play();
         }
     }
 
@@ -204,6 +209,8 @@ public class Player : MonoBehaviour
                     {
                         if (missiledOnLeft[0].GetComponent<Missile>().isDodgeable)
                         {
+                            //leftFlareParticles.GetParticles(leftParticleArray);
+                            //missiledOnLeft[0].GetComponent<Missile>().SwayToFlare(leftParticleArray[leftParticleArray.Count() - 1]);
                             missiledOnLeft[0].GetComponent<Missile>().SwayFromTarget();
                             missiledOnLeft.RemoveAt(0);
                         }
@@ -212,6 +219,8 @@ public class Player : MonoBehaviour
                     {
                         if (missiledOnRight[0].GetComponent<Missile>().isDodgeable)
                         {
+                            //rightFlareParticles.GetParticles(rightParticleArray);
+                            //missiledOnRight[0].GetComponent<Missile>().SwayToFlare(rightParticleArray[rightParticleArray.Count() - 1]);
                             missiledOnRight[0].GetComponent<Missile>().SwayFromTarget();
                             missiledOnRight.RemoveAt(0);
                         }

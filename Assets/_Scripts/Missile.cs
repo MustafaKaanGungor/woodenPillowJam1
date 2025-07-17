@@ -11,6 +11,8 @@ public class Missile : MonoBehaviour
     [SerializeField] private AnimationCurve projectileCurve;
     private Vector3 startPoint;
     public bool isDodgeable = false;
+    private bool isTargetingFlare = false;
+    private ParticleSystem.Particle targetParticle;
     [SerializeField] private GameObject missileUIprefab;
     private Vector3 target;
     [SerializeField] private float projectileMaxHeight = 100;
@@ -54,6 +56,11 @@ public class Missile : MonoBehaviour
         transform.position += moveDirNormalized * moveSpeed * Time.deltaTime;
         */
 
+        if (isTargetingFlare)
+        {
+            target = targetParticle.position;
+        }
+        Debug.Log(target);
         Vector3 projectileRange = target - startPoint;
         float nextPositionZ = transform.position.z - moveSpeed * Time.deltaTime;
         float nextPositionZNormalized = (nextPositionZ - startPoint.z) / projectileRange.z;
@@ -72,8 +79,8 @@ public class Missile : MonoBehaviour
             Vector3 newPosition = new Vector3(nextPositionXY * missileRouteXFactor, -nextPositionXY * 0.7f * missileRouteYFactor, nextPositionZ);
             transform.position = newPosition;
         }
-        
-        
+
+
     }
 
     public float RemainingDistance()
@@ -89,5 +96,11 @@ public class Missile : MonoBehaviour
     public void SwayFromTarget()
     {
         isTracking = false;
+    }
+
+    public void SwayToFlare(GameObject newTarget)
+    {
+        //target = newTarget;
+        isTargetingFlare = true;
     }
 }
