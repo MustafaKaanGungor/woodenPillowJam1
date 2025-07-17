@@ -32,6 +32,10 @@ public class Player : MonoBehaviour
     //[SerializeField] private ParticleSystem rightFlareParticles;
     //private ParticleSystem.Particle[] leftParticleArray;
     //private ParticleSystem.Particle[] rightParticleArray;
+    [SerializeField] private GameObject flarePrefab;
+    [SerializeField] private Transform flareSpawnPoint;
+    [SerializeField] private Transform flareTargetRight;
+    [SerializeField] private Transform flareTargetLeft;
     [SerializeField] private float flareCooldown = 0.5f;
     [SerializeField] private float blackoutLimit = 100;
     [SerializeField] private float blackoutMeter = 0f;
@@ -57,13 +61,14 @@ public class Player : MonoBehaviour
     {
         if (flareAmount <= 0)
         {
-            HUDManager.Instance.NoFlaresRemain();  
+            HUDManager.Instance.NoFlaresRemain();
         }
         else
         {
             startFlaring = true;
             //leftFlareParticles.Play();
             //rightFlareParticles.Play();
+            
         }
     }
 
@@ -205,6 +210,11 @@ public class Player : MonoBehaviour
                     flareAmount -= 2;
                     flareTimer = 0;
                     flareFireAmount++;
+                    GameObject firedFlare = Instantiate(flarePrefab, flareSpawnPoint.position, Quaternion.identity);
+                    firedFlare.GetComponent<FlareUnit>().SetTarget(flareTargetLeft.position);
+
+                    GameObject firedFlare2 = Instantiate(flarePrefab, flareSpawnPoint.position, Quaternion.identity);
+                    firedFlare2.GetComponent<FlareUnit>().SetTarget(flareTargetRight.position);
                     if (missiledOnLeft.Count != 0)
                     {
                         if (missiledOnLeft[0].GetComponent<Missile>().isDodgeable)

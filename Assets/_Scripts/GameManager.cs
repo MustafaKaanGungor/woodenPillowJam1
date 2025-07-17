@@ -27,7 +27,7 @@ public class GameManager : MonoBehaviour
                 break;
             case GameState.LOSE:
                 Debug.Log("game ended");
-                Time.timeScale = 0f;
+                //Time.timeScale = 0f;
                 break;
             default:
                 break;
