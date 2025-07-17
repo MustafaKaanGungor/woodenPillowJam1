@@ -13,7 +13,7 @@ public class Player : MonoBehaviour
         TERRIFIED = 2,
     }
     [SerializeField] private PilotStatus currentStatus;
-    private Animator animator;
+    [SerializeField] private Animator animator;
     [SerializeField] private float edgePanAreaSize = 200;
     //[SerializeField] private float turnFactor = 5f;
     //[SerializeField] private float turnTime = 5f;
@@ -41,7 +41,7 @@ public class Player : MonoBehaviour
     private void Awake()
     {
         Instance = this;
-        animator = GetComponent<Animator>();
+        //animator = GetComponent<Animator>();
         //leftParticleArray = new ParticleSystem.Particle[leftFlareParticles.main.maxParticles];
         //rightParticleArray = new ParticleSystem.Particle[rightFlareParticles.main.maxParticles];
     }
