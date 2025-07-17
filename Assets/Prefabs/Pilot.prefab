@@ -10247,10 +10247,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   currentStatus: 0
+  edgePanAreaSize: 200
   turnLimit: 20
   missiledOnLeft: []
   missiledOnRight: []
-  flareAmount: 60
+  flareAmount: 12
   leftFlareParticles: {fileID: 1895367280571094083}
   rightFlareParticles: {fileID: 8185764252795904052}
   flareCooldown: 0.5

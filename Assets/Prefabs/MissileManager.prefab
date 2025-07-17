@@ -29,7 +29,8 @@ Transform:
   m_LocalPosition: {x: 0.27271774, y: 1.0004202, z: -1.5271802}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children: []
+  m_Children:
+  - {fileID: 3344009407616606668}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &5194468897218244711
@@ -48,3 +49,35 @@ MonoBehaviour:
   missileFireChance: 50
   missileLeftPrefab: {fileID: 2905870538186014038, guid: 267482486672beb449210f08e19b9ec5, type: 3}
   missileRightPrefab: {fileID: 2939296128039057323, guid: 15febb980a9ca6448b760a03eba5f3ea, type: 3}
+  missileSpawnPoint: {fileID: 3344009407616606668}
+--- !u!1 &7357296345102183979
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 3344009407616606668}
+  m_Layer: 0
+  m_Name: MissileSpawnPoint
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &3344009407616606668
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7357296345102183979}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 50, z: 1000}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 4050335365745922850}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
