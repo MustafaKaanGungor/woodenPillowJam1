@@ -1,7 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Unity.Mathematics;
 using UnityEngine;
+using DG.Tweening;
 
 public class Player : MonoBehaviour
 {
@@ -10,17 +12,21 @@ public class Player : MonoBehaviour
     {
         CALM = 0,
         UNCONSCIOUS = 1,
-        TERRIFIED = 2,
+        PANIC = 2,
+        SHOCK = 3
     }
     [SerializeField] private PilotStatus currentStatus;
     [SerializeField] private Animator animator;
     [SerializeField] private float edgePanAreaSize = 200;
-    //[SerializeField] private float turnFactor = 5f;
-    //[SerializeField] private float turnTime = 5f;
+    [SerializeField] private float turnFactor = 50f;
+    [SerializeField] private float turnTime = 5f;
+    private float turnAmountX = 0;
+    private float turnAmountY = 0;
+
     private float turnAmountRight = 0f;
     private float turnAmountLeft = 0f;
-    //[SerializeField] private float turnAmountUp = 0f;
-    //[SerializeField] private float turnAmountDown = 0f;
+    [SerializeField] private float turnAmountUp = 0f;
+    [SerializeField] private float turnAmountDown = 0f;
     [SerializeField] private float turnLimit = 20f;
     [SerializeField] private List<GameObject> missiledOnLeft = new List<GameObject>();
     [SerializeField] private List<GameObject> missiledOnRight = new List<GameObject>();
@@ -28,15 +34,12 @@ public class Player : MonoBehaviour
     private bool startFlaring = false;
     private int flareFireAmount = 0;
     private float flareTimer = 1.5f;
-    //[SerializeField] private ParticleSystem leftFlareParticles;
-    //[SerializeField] private ParticleSystem rightFlareParticles;
-    //private ParticleSystem.Particle[] leftParticleArray;
-    //private ParticleSystem.Particle[] rightParticleArray;
     [SerializeField] private GameObject flarePrefab;
     [SerializeField] private Transform flareSpawnPoint;
     [SerializeField] private Transform flareTargetRight;
     [SerializeField] private Transform flareTargetLeft;
     [SerializeField] private float flareCooldown = 0.5f;
+    private int dodgeChanceSecurity = 0;
     [SerializeField] private float blackoutLimit = 100;
     [SerializeField] private float blackoutMeter = 0f;
     [SerializeField] private float blackoutCooldown = 2f;
@@ -45,9 +48,6 @@ public class Player : MonoBehaviour
     private void Awake()
     {
         Instance = this;
-        //animator = GetComponent<Animator>();
-        //leftParticleArray = new ParticleSystem.Particle[leftFlareParticles.main.maxParticles];
-        //rightParticleArray = new ParticleSystem.Particle[rightFlareParticles.main.maxParticles];
     }
 
     private void Start()
@@ -66,9 +66,6 @@ public class Player : MonoBehaviour
         else
         {
             startFlaring = true;
-            //leftFlareParticles.Play();
-            //rightFlareParticles.Play();
-            
         }
     }
 
@@ -103,7 +100,7 @@ public class Player : MonoBehaviour
                     currentStatus = PilotStatus.CALM;
                 }
                 break;
-            case PilotStatus.TERRIFIED:
+            case PilotStatus.PANIC:
                 Look();
                 Maneuver(70);
                 Flare();
@@ -125,6 +122,7 @@ public class Player : MonoBehaviour
         {
             animator.SetBool("LookRight", true);
             animator.SetBool("LookLeft", false);
+
         }
         else
         {
@@ -195,7 +193,23 @@ public class Player : MonoBehaviour
             }
         }
 
-        //transform.DORotate(new Vector3(0, 0, transform.rotation.eulerAngles.z - maneuverInput.x * turnFactor), turnTime, RotateMode.FastBeyond360);
+        turnAmountX -= maneuverInput.x;
+        turnAmountX = Mathf.Clamp(turnAmountX, -60, 60);
+        transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.Euler(0, 0, turnAmountX), Time.deltaTime);
+
+        turnAmountY -= maneuverInput.y;
+        turnAmountY = Mathf.Clamp(turnAmountY, -30, 30);
+        transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.Euler(turnAmountY, 0, 0), Time.deltaTime);
+
+        if (maneuverInput.x < 0.1f || maneuverInput.x > -0.1f)
+        {
+            turnAmountX = Mathf.Lerp(turnAmountX, 0f, Time.deltaTime);
+        }
+
+        if (maneuverInput.y < 0.1f || maneuverInput.y > -0.1f)
+        {
+            turnAmountY = Mathf.Lerp(turnAmountY, 0f, Time.deltaTime);
+        }
     }
 
     private void Flare()
@@ -219,20 +233,36 @@ public class Player : MonoBehaviour
                     {
                         if (missiledOnLeft[0].GetComponent<Missile>().isDodgeable)
                         {
-                            //leftFlareParticles.GetParticles(leftParticleArray);
-                            //missiledOnLeft[0].GetComponent<Missile>().SwayToFlare(leftParticleArray[leftParticleArray.Count() - 1]);
-                            missiledOnLeft[0].GetComponent<Missile>().SwayFromTarget();
-                            missiledOnLeft.RemoveAt(0);
+                            int dodgeChance = UnityEngine.Random.Range(0, 6);
+                            if (dodgeChance >= 4 || dodgeChanceSecurity >= 6)
+                            {
+                                missiledOnLeft[0].GetComponent<Missile>().SwayToFlare(firedFlare);
+                                missiledOnLeft.RemoveAt(0);
+                                dodgeChanceSecurity = 0;
+                            }
+                            else
+                            {
+                                dodgeChanceSecurity++;
+                            }
+                            
                         }
                     }
                     if (missiledOnRight.Count != 0)
                     {
+                        
                         if (missiledOnRight[0].GetComponent<Missile>().isDodgeable)
                         {
-                            //rightFlareParticles.GetParticles(rightParticleArray);
-                            //missiledOnRight[0].GetComponent<Missile>().SwayToFlare(rightParticleArray[rightParticleArray.Count() - 1]);
-                            missiledOnRight[0].GetComponent<Missile>().SwayFromTarget();
-                            missiledOnRight.RemoveAt(0);
+                            int dodgeChance = UnityEngine.Random.Range(0, 6);
+                            if (dodgeChance >= 5 || dodgeChanceSecurity >= 6)
+                            {
+                                missiledOnRight[0].GetComponent<Missile>().SwayToFlare(firedFlare2);
+                                missiledOnRight.RemoveAt(0);
+                                dodgeChanceSecurity = 0;
+                            }
+                            else
+                            {
+                                dodgeChanceSecurity++;
+                            }
                         }
                     }
                 }

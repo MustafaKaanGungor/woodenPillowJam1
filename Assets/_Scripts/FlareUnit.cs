@@ -3,18 +3,9 @@ using UnityEngine;
 public class FlareUnit : MonoBehaviour
 {
     private bool isIntact = true;
-    private Vector3 startPoint;
     [SerializeField] private Vector3 targetPosition;
-    private float moveSpeed = 5f;
-    [SerializeField] private AnimationCurve projectileCurve;
-    [SerializeField] private float projectileMaxHeight = 10f;
-    [SerializeField] private float flareRouteXFactor = 1f;
-    [SerializeField] private float flareRouteYFactor = 1f;
+    [SerializeField] private float moveSpeed = 50f;
 
-    private void Start()
-    {
-        startPoint = transform.position;
-    }
     private void Update()
     {
         if (isIntact && targetPosition != null)
@@ -25,18 +16,14 @@ public class FlareUnit : MonoBehaviour
 
     private void UpdatePosition()
     {
-        Vector3 projectileRange = targetPosition - startPoint;
-        float nextPositionZ = transform.position.z + moveSpeed * Time.deltaTime;
-        float nextPositionZNormalized = (nextPositionZ - startPoint.z) / projectileRange.z;
-        float nextPositionX = transform.position.x - moveSpeed * Time.deltaTime;
-        float nextPositionY = transform.position.y - moveSpeed * Time.deltaTime;
+        Vector3 moveDirNormalized = (targetPosition - transform.position).normalized;
+        transform.position += moveDirNormalized * moveSpeed * Time.deltaTime;
 
-        float nextPositionXYNormalized = projectileCurve.Evaluate(nextPositionZNormalized);
-
-        float nextPositionXY = startPoint.y - nextPositionXYNormalized * projectileMaxHeight;
-
-        Vector3 newPosition = new Vector3(-nextPositionX, -nextPositionY, nextPositionZ);
-        transform.position = newPosition;
+        if (Vector3.Distance(transform.position, targetPosition) < 1f)
+        {
+            isIntact = false;
+            //TODO kill the flare
+        }
     }
 
     public void SetTarget(Vector3 targetPos)
