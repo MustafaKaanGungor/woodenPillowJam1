@@ -19,4 +19,9 @@ public class MissileUI : MonoBehaviour
             rangeText.text = missile.GetComponent<Missile>().RemainingDistance().ToString("0.00") + "km";
         }
     }
+
+    public void Hide()
+    {
+        gameObject.SetActive(false);
+    }
 }

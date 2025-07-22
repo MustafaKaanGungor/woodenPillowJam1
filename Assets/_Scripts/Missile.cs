@@ -12,8 +12,9 @@ public class Missile : MonoBehaviour
     private Vector3 startPoint;
     public bool isDodgeable = false;
     private bool isTargetingFlare = false;
-    private ParticleSystem.Particle targetParticle;
+    private GameObject targetFlare;
     [SerializeField] private GameObject missileUIprefab;
+    private GameObject missileUI = null;
     private Vector3 target;
     [SerializeField] private float projectileMaxHeight = 100;
     private bool isRight;
@@ -25,7 +26,7 @@ public class Missile : MonoBehaviour
     {
         startPoint = transform.position;
         target = Player.Instance.transform.position;
-        GameObject missileUI = Instantiate(missileUIprefab, HUDManager.Instance.transform);
+        missileUI = Instantiate(missileUIprefab, HUDManager.Instance.transform);
         missileUI.GetComponent<MissileUI>().SetMissile(gameObject);
         missileRouteXFactor = Random.Range(0.5f, 1.5f);
         missileRouteYFactor = Random.Range(0.5f, 1.5f);
@@ -38,7 +39,7 @@ public class Missile : MonoBehaviour
         {
             UpdatePosition();
             reachTimer += Time.deltaTime;
-            if (reachTimer > timeToReach)
+            if (reachTimer > timeToReach && !isTargetingFlare)
             {
                 Player.Instance.GetHit();
             }
@@ -51,33 +52,39 @@ public class Missile : MonoBehaviour
 
     private void UpdatePosition()
     {
-        /* Linear Movement
-        Vector3 moveDirNormalized = (Player.Instance.transform.position - transform.position).normalized;
-        transform.position += moveDirNormalized * moveSpeed * Time.deltaTime;
-        */
 
         if (isTargetingFlare)
         {
-            target = targetParticle.position;
-        }
-        Debug.Log(target);
-        Vector3 projectileRange = target - startPoint;
-        float nextPositionZ = transform.position.z - moveSpeed * Time.deltaTime;
-        float nextPositionZNormalized = (nextPositionZ - startPoint.z) / projectileRange.z;
+            target = targetFlare.transform.position;
 
-        float nextPositionXYNormalized = projectileCurve.Evaluate(nextPositionZNormalized);
-        float nextPositionXY = startPoint.y - nextPositionXYNormalized * projectileMaxHeight;
-
-
-        if (isRight)
-        {
-            Vector3 newPosition = new Vector3(-nextPositionXY * missileRouteXFactor, -nextPositionXY * 0.7f * missileRouteYFactor, nextPositionZ);
-            transform.position = newPosition;
+            Vector3 moveDirNormalized = (target - transform.position).normalized;
+            transform.position += moveDirNormalized * moveSpeed * Time.deltaTime;
         }
         else
         {
-            Vector3 newPosition = new Vector3(nextPositionXY * missileRouteXFactor, -nextPositionXY * 0.7f * missileRouteYFactor, nextPositionZ);
-            transform.position = newPosition;
+            Vector3 projectileRange = target - startPoint;
+            float nextPositionZ = transform.position.z - moveSpeed * Time.deltaTime;
+            float nextPositionZNormalized = (nextPositionZ - startPoint.z) / projectileRange.z;
+
+            float nextPositionXYNormalized = projectileCurve.Evaluate(nextPositionZNormalized);
+            float nextPositionXY = startPoint.y - nextPositionXYNormalized * projectileMaxHeight;
+
+
+            if (isRight)
+            {
+                Vector3 newPosition = new Vector3(-nextPositionXY * missileRouteXFactor, -nextPositionXY * 0.7f * missileRouteYFactor, nextPositionZ);
+                transform.position = newPosition;
+            }
+            else
+            {
+                Vector3 newPosition = new Vector3(nextPositionXY * missileRouteXFactor, -nextPositionXY * 0.7f * missileRouteYFactor, nextPositionZ);
+                transform.position = newPosition;
+            }
+        }
+
+        if (Vector3.Distance(transform.position, target) < 1f)
+        {
+            SwayFromTarget();
         }
 
 
@@ -96,11 +103,12 @@ public class Missile : MonoBehaviour
     public void SwayFromTarget()
     {
         isTracking = false;
+        missileUI.GetComponent<MissileUI>().Hide();
     }
 
     public void SwayToFlare(GameObject newTarget)
     {
-        //target = newTarget;
+        targetFlare = newTarget;
         isTargetingFlare = true;
     }
 }
